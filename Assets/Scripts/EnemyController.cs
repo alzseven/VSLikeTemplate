@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,16 +10,20 @@ public class EnemyController : MonoBehaviour
     private Rigidbody2D _rigidbody;
     private bool isLive = true;
     private SpriteRenderer _renderer;
-    private EnemyStats _stats;
+    public event Action<EnemyController> OnEnemyDead = delegate { };
     
     private void Awake()
     {
-        _stats = GetComponent<EnemyStats>();
         _renderer = GetComponent<SpriteRenderer>();
         _rigidbody = GetComponent<Rigidbody2D>();
     }
 
-
+    public void Init()
+    {
+        
+    }
+    
+    
     // Update is called once per frame
     void FixedUpdate()
     {
