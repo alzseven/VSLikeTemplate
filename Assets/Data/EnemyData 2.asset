@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: EnemyData 2
   m_EditorClassIdentifier: 
   enemySpawnDatas:
-  - enemyController: {fileID: 4994697424807359735, guid: 1378f463825769642931ed2922d595e0, type: 3}
+  - enemy: {fileID: 6081403347143339226, guid: 31929e70a628b80439ddb07887473393, type: 3}
     spawnRange: 15
     spawnDelay: 1
     spawnEndTime: 36
     spawnAmount: 0
     spawnMinimumAmount: 10
-  - enemyController: {fileID: 6081403347143339226, guid: 31929e70a628b80439ddb07887473393, type: 3}
+  - enemy: {fileID: 4994697424807359735, guid: 1378f463825769642931ed2922d595e0, type: 3}
     spawnRange: 15
     spawnDelay: 1
     spawnEndTime: 36

@@ -3,14 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
     public float speed;
-    public Transform targetTransform;
+    public float health;
+    public float maxHealth;
+    
     private Rigidbody2D _rigidbody;
-    private bool isLive = true;
+    
+    private Collider2D _collider2D;
     private SpriteRenderer _renderer;
-    public event Action<EnemyController> OnEnemyDead = delegate { };
+    private static readonly int Hit = Animator.StringToHash("Hit");
+    public RuntimeAnimatorController animatorController;
+    private Animator _animator;
+    
+    private WaitForFixedUpdate _wait;
+    
+    public Transform targetTransform;
+    
+    private bool isLive = true;
+    
+    public event Action<Enemy> OnEnemyDead = delegate { };
     
     private void Awake()
     {

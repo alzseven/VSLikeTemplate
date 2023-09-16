@@ -10,7 +10,7 @@ public class StageEnemyData : ScriptableObject
 [Serializable]
 public class EnemySpawnData
 {
-    public EnemyController enemyController;
+    public Enemy enemy;
     public float spawnRange;
     public float spawnDelay;
     public float spawnEndTime;

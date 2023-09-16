@@ -7,8 +7,8 @@ using Random = UnityEngine.Random;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private EnemyController enemyController;
-    private ObjectPool<EnemyController> _enemyPool;
+    [SerializeField] private Enemy enemy;
+    private ObjectPool<Enemy> _enemyPool;
     private float _spawnEndTime;
     private WaitForSeconds _waitForSeconds;
     private int _spawnAmount;
@@ -19,7 +19,7 @@ public class EnemySpawner : MonoBehaviour
     
     private void Awake()
     {
-        _enemyPool = new ObjectPool<EnemyController>(CreateObject,
+        _enemyPool = new ObjectPool<Enemy>(CreateObject,
             OnTakeObjectFromPool,
             OnReturnObjectToPool,
             OnDestroyPoolObject,
@@ -31,7 +31,7 @@ public class EnemySpawner : MonoBehaviour
 
     public void Init(EnemySpawnData spawnData)
     {
-        enemyController = spawnData.enemyController;
+        enemy = spawnData.enemy;
         _spawnEndTime = spawnData.spawnEndTime;
         _waitForSeconds = new WaitForSeconds(spawnData.spawnDelay);
         _spawnRange = spawnData.spawnRange;
@@ -50,7 +50,7 @@ public class EnemySpawner : MonoBehaviour
 
     public void ResetValues()
     {
-        enemyController = null;
+        enemy = null;
         _spawnEndTime = 99999;
         _waitForSeconds = null;
         _spawnAmount = 0;
@@ -61,37 +61,37 @@ public class EnemySpawner : MonoBehaviour
     
     #region EnemyPool
 
-    private EnemyController CreateObject()
+    private Enemy CreateObject()
     {
-        var ec = Instantiate(enemyController);
+        var ec = Instantiate(enemy);
         return ec;
     }
     
-    private void OnTakeObjectFromPool(EnemyController ec)
+    private void OnTakeObjectFromPool(Enemy e)
     {
-        ec.gameObject.SetActive(true);
-        ec.OnEnemyDead += ReleaseObj;
+        e.gameObject.SetActive(true);
+        e.OnEnemyDead += ReleaseObj;
 
     }
     
-    private void OnReturnObjectToPool(EnemyController ec)
+    private void OnReturnObjectToPool(Enemy e)
     {
-        ec.OnEnemyDead -= ReleaseObj;
+        e.OnEnemyDead -= ReleaseObj;
         OnSpawnEnded(this);
-        ec.gameObject.SetActive(false);
+        e.gameObject.SetActive(false);
     }
 
-    private void OnDestroyPoolObject(EnemyController ec)
+    private void OnDestroyPoolObject(Enemy e)
     {
-        Destroy(ec.gameObject);
+        Destroy(e.gameObject);
     }
     
 
     #endregion
 
-    private void ReleaseObj(EnemyController ec)
+    private void ReleaseObj(Enemy e)
     {
-        _enemyPool.Release(ec);
+        _enemyPool.Release(e);
     }
     
     private void Update()

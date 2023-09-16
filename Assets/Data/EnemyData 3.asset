@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EnemyData 3
   m_EditorClassIdentifier: 
   enemySpawnDatas:
-  - enemyController: {fileID: 6081403347143339226, guid: 31929e70a628b80439ddb07887473393, type: 3}
+  - enemy: {fileID: 6081403347143339226, guid: 31929e70a628b80439ddb07887473393, type: 3}
     spawnRange: 15
     spawnDelay: 1
     spawnEndTime: 48
