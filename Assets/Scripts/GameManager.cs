@@ -4,6 +4,7 @@ using UnityEngine;
 public class GameManager : SingletonBehaviour<GameManager>
 {
     public Transform playerTransform;
+    public Rigidbody2D playerRb;
     public float CurrentGameTime { get; private set; }
     public bool isGameEnded;
 

@@ -1,14 +1,15 @@
 ﻿using System;
+using Data;
 using UnityEngine;
 using UnityEngine.Pool;
 
 public class EnemySpawnerManager : MonoBehaviour
 {
-    [SerializeField] private StageEnemyData[] stageEnemyDatas;
+    [SerializeField] private StageEnemyData[] stageEnemyData;
     [SerializeField] private EnemySpawner enemySpawner;
     private ObjectPool<EnemySpawner> _spawnerPool;
 
-    private int _spawnCnt;
+    private int _activeSpawnerCount;
     private int _currentSpawnIndex;
     
     private void Awake()
@@ -21,7 +22,7 @@ public class EnemySpawnerManager : MonoBehaviour
             5,
             10
             );
-        _spawnCnt = 0;
+        _activeSpawnerCount = 0;
         _currentSpawnIndex = 0;
     }
 
@@ -64,17 +65,17 @@ public class EnemySpawnerManager : MonoBehaviour
     {
         _spawnerPool.Release(spawner);
         
-        if (_spawnCnt > 0)
+        if (_activeSpawnerCount > 0)
         {
-            _spawnCnt--;
+            _activeSpawnerCount--;
         }
 
-        if (_spawnCnt == 0)
+        if (_activeSpawnerCount == 0)
         {
             _currentSpawnIndex++;
-            if (_currentSpawnIndex >= stageEnemyDatas.Length)
+            if (_currentSpawnIndex >= stageEnemyData.Length)
             {
-                throw new NotImplementedException();
+                // throw new NotImplementedException();
             }
             else
             {
@@ -85,13 +86,15 @@ public class EnemySpawnerManager : MonoBehaviour
     
     private void SetupSpawners()
     {
-        _spawnCnt = stageEnemyDatas[_currentSpawnIndex].enemySpawnDatas.Length;
+        var currentSpawnData = stageEnemyData[_currentSpawnIndex];
+        
+        _activeSpawnerCount = currentSpawnData.enemySpawnData.Length;
 
-        foreach (EnemySpawnData data in stageEnemyDatas[_currentSpawnIndex].enemySpawnDatas)
+        foreach (EnemySpawnData data in currentSpawnData.enemySpawnData)
         {
             var pool = _spawnerPool.Get();
             pool.transform.parent = transform;
-            pool.Init(data);
+            pool.Init(data, currentSpawnData.spawnBeginTime, currentSpawnData.spawnEndTime);
         } 
     }
 }

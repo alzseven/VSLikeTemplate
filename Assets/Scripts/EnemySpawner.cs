@@ -1,20 +1,28 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Data;
 using UnityEngine;
 using UnityEngine.Pool;
-using Random = UnityEngine.Random;
+
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private Enemy enemy;
+    [SerializeField] protected Enemy enemy;
+    private EnemyData _data;
     private ObjectPool<Enemy> _enemyPool;
-    private float _spawnEndTime;
+    private float _spawnRange;
     private WaitForSeconds _waitForSeconds;
     private int _spawnAmount;
-    private IEnumerator _enumerator;
-    private float _spawnRange;
     private int _spawnMinimumAmount;
+    private int _spawnCount;
+    private float _spawnEndTime;
+    private EnemySpawnData.MovePattern _movePattern;
+    private SpawnPattern _spawnPattern;
+    
+    private IEnumerator _enumerator;
+    
+
     public event Action<EnemySpawner> OnSpawnEnded = delegate { };
     
     private void Awake()
@@ -28,29 +36,35 @@ public class EnemySpawner : MonoBehaviour
             100
         );
     }
-
-    public void Init(EnemySpawnData spawnData)
+    
+    public void Init(EnemySpawnData spawnData, float beginTime, float endTime)
     {
+        _spawnEndTime = endTime;
+        
         enemy = spawnData.enemy;
-        _spawnEndTime = spawnData.spawnEndTime;
-        _waitForSeconds = new WaitForSeconds(spawnData.spawnDelay);
+        _data = spawnData.enemyData;
         _spawnRange = spawnData.spawnRange;
+        _waitForSeconds = new WaitForSeconds(spawnData.spawnDelay);
+        _spawnAmount = spawnData.spawnAmount;
         _spawnMinimumAmount = spawnData.spawnMinimumAmount;
+        _movePattern = spawnData.movePattern;
+        _spawnPattern = spawnData.spawnPattern;
+        
         if (_spawnMinimumAmount > 0)
         {
-            for (var i = 0; i < _spawnMinimumAmount; i++)
-            {
-                SpawnEnemy();
-            }
+            SpawnEnemy(_spawnMinimumAmount);
         }
-        _spawnAmount = spawnData.spawnAmount - _spawnMinimumAmount;
-        _enumerator = _spawnAmount > 0 ? SpawnEnemyByTime(_spawnAmount) : SpawnEnemyByTime();
+        _spawnCount = spawnData.spawnCount - _spawnMinimumAmount;
+
+        
+        _enumerator = _spawnCount >= 0 ? SpawnEnemyByTime(_spawnCount) : SpawnEnemyByTime();
         StartCoroutine(_enumerator);
     }
-
+    
     public void ResetValues()
     {
         enemy = null;
+        _data = null;
         _spawnEndTime = 99999;
         _waitForSeconds = null;
         _spawnAmount = 0;
@@ -106,32 +120,64 @@ public class EnemySpawner : MonoBehaviour
     private IEnumerator SpawnEnemyByTime()
     {
         if(_spawnMinimumAmount>0) yield return _waitForSeconds;
+        
         while (!GameManager.Instance.isGameEnded)
         {
-            SpawnEnemy();
+            SpawnEnemy(_spawnAmount);
             yield return _waitForSeconds;
         }
-        OnSpawnEnded(this);
     }
+
     private IEnumerator SpawnEnemyByTime(int amount)
     {
         if(_spawnMinimumAmount>0) yield return _waitForSeconds;
+        
         for (var i = 0; i < amount; i++)
         {
             if (GameManager.Instance.isGameEnded) break;
 
-            SpawnEnemy();
+            SpawnEnemy(_spawnAmount);
             yield return _waitForSeconds;
         }
-        OnSpawnEnded(this);
     }
 
-    private void SpawnEnemy()
+    //TODO:
+    private void SpawnEnemy(int amount)
     {
-        var enemy = _enemyPool.Get();
-        enemy.targetTransform = GameManager.Instance.playerTransform;
-        enemy.transform.position = GameManager.Instance.playerTransform.position +
-                                   (Vector3) Random.insideUnitCircle.normalized * _spawnRange;
+        var spPositions = _spawnPattern.GetSpawnPositions(
+            amount,
+            _spawnRange,
+            GameManager.Instance.playerRb.position
+            );
+        
+        foreach (var p in spPositions)
+        {
+            switch (_movePattern)
+            {
+                case EnemySpawnData.MovePattern.MOVE_FORWARD:
+                    SpawnEnemy(p, GameManager.Instance.playerRb.position);
+                    break;
+                default:
+                    SpawnEnemy(p, GameManager.Instance.playerRb);
+                    break;
+            }
+        }
+    }
+
+    private void SpawnEnemy(Vector2 spawnPos, Rigidbody2D targetRb)
+    {
+        var e = _enemyPool.Get();
+        e.Init(_data);
+        e.targetRb = targetRb;
+        e.SetPosition(spawnPos);
+    }
+    
+    private void SpawnEnemy(Vector2 spawnPos, Vector2 targetPos)
+    {
+        var e = _enemyPool.Get();
+        e.Init(_data);
+        e.targetPos = targetPos;
+        e.SetPosition(spawnPos);
     }
 }
 

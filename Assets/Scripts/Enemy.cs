@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Data;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -8,45 +9,76 @@ public class Enemy : MonoBehaviour
     public float speed;
     public float health;
     public float maxHealth;
-    
-    private Rigidbody2D _rigidbody;
-    
-    private Collider2D _collider2D;
-    private SpriteRenderer _renderer;
-    private static readonly int Hit = Animator.StringToHash("Hit");
-    public RuntimeAnimatorController animatorController;
-    private Animator _animator;
-    
-    private WaitForFixedUpdate _wait;
-    
-    public Transform targetTransform;
-    
-    private bool isLive = true;
-    
+    private bool _isLive = true;
+    public Rigidbody2D targetRb;
+    public Vector2 targetPos;
+    private EnemyController _controller;
     public event Action<Enemy> OnEnemyDead = delegate { };
-    
+    private SpriteRenderer _renderer;
+    private Animator _animator;
+    private static readonly int Hit = Animator.StringToHash("Hit");
+    private static readonly int Dead = Animator.StringToHash("Dead");
+
     private void Awake()
     {
         _renderer = GetComponent<SpriteRenderer>();
-        _rigidbody = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
+        _controller = GetComponent<EnemyController>();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    //TODO:
+    public void Init(EnemyData data)
     {
-        if (!isLive) return;
-        
-        
-        Vector2 dir = (Vector2)targetTransform.position - _rigidbody.position;
-        Vector2 next = dir.normalized * (speed * Time.fixedDeltaTime);
-        _rigidbody.MovePosition(_rigidbody.position + next);
-        // _rigidbody.velocity = Vector2.zero;
+        name = "Enemy " + Time.deltaTime; 
+        gameObject.SetActive(true);
+        maxHealth = data.statData.maxHealth;
+        speed = data.statData.speed;
+        health = maxHealth;
+        _isLive = true;
+        _renderer.sprite = data.enemySprite;
+        _animator.runtimeAnimatorController = data.animatorController;
+    }
+
+    public void SetPosition(Vector2 dest)
+    {
+        transform.position = dest;
+    }
+
+    private void FixedUpdate()
+    {
+        if (!_isLive) return;
+
+        targetPos = targetRb ? targetRb.position : targetPos;
+        _controller.MoveToTargetPosition(targetPos, speed);
     }
     
-    void LateUpdate()
+    private void LateUpdate()
     {
-        if (!isLive) return;
-        
-        _renderer.flipX = targetTransform.position.x < _rigidbody.position.x;
+        if (!_isLive) return;
+        _renderer.flipX = _controller.IsFacingRight(targetPos);
+    }
+
+    //TODO:
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+        StartCoroutine(_controller.KnockBack());        
+
+        if (health > 0)
+        {
+            _animator.SetTrigger(Hit);
+        }
+        else
+        {
+            _isLive = false;
+            _animator.SetBool(Dead, true);
+            Invoke(nameof(OnDie), 1f);
+        }
+    }
+
+    //TODO:
+    private void OnDie()
+    {
+        OnEnemyDead(this);
     }
 }
