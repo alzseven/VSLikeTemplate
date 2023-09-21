@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d32ecaa5f3a7470dbdb2b824a32a27d1, type: 3}
-  m_Name: EnemyData 1
+  m_Script: {fileID: 11500000, guid: 2afc0cf10e0529348b01fc72a2416b09, type: 3}
+  m_Name: EnemyStatData
   m_EditorClassIdentifier: 
-  spawnBeginTime: 0
-  spawnEndTime: 20
-  enemySpawnData:
-  - {fileID: 11400000, guid: ac7ce04a5bfeb15458be6392ff875de8, type: 2}
+  speed: 1.2
+  health: 0
+  maxHealth: 12
