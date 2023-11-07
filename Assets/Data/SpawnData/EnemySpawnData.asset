@@ -18,6 +18,6 @@ MonoBehaviour:
   spawnDelay: 1
   spawnAmount: 1
   spawnMinimumAmount: 0
-  spawnCount: 1
+  spawnCount: 0
   movePattern: 1
   spawnPattern: {fileID: 11400000, guid: ec01893d53d1780449334d2f7eac34fa, type: 2}

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f34f62f55b54f65996232a5825053f0, type: 3}
+  m_Name: Riffle_WeaponData
+  m_EditorClassIdentifier: 
+  itemId: 1
+  itemName: Riffle
+  itemIcon: {fileID: -205726582, guid: d71a3dc7aa20fad4f9a99fc76a9254ba, type: 3}
+  itemDescription: Riffle
+  defaultAmmo: 0
+  defaultCondition: 0
+  weaponStatsList:
+  - {fileID: 11400000, guid: 8263d9bcce329ed4e9edbc2fd4d816b9, type: 2}
+  - {fileID: 11400000, guid: cc72d23b73809064ebd4b238e5c2fd6d, type: 2}
+  - {fileID: 11400000, guid: 9f2ad5a78aec68241a091aa1956fde7c, type: 2}
+  weaponInventory: {fileID: 11400000, guid: 53e7c2a111a5af14a9bfa93cfb38c571, type: 2}
+  weaponPrefab: {fileID: 8832898268526749357, guid: 05675fc1f95edbe40887f8dd986f92e9, type: 3}
